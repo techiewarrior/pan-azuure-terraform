@@ -2,45 +2,6 @@ data "azurerm_resource_group" "rg" {
   name = "${var.resource_group_name}"
 }
 
-# ********** STORAGE ACCOUNT Firewall **********
-
-# Generate a random id for the storage account due to the need to be unique across azure.
-# Here we are generating a random hex value of length 4 (2*2) that is prefixed with
-# the static string "sternstorageaccount". For example: sternstorageaccount1n8a
-# resource "random_id" "storage_account" {
-#   prefix      = "storageaccount"
-#   byte_length = "2"
-# }
-
-# Create the storage account
-# resource "azurerm_storage_account" "storrageaccfw" {
-#   name                     = "${lower(random_id.storage_account.hex)}"
-#   resource_group_name      = "${var.resource_group_name}"
-#   location                 = "${data.azurerm_resource_group.rg.location}"
-#   account_replication_type = "${element(split("_", var.boot_diagnostics_sa_type),1)}"
-#   account_tier             = "${element(split("_", var.boot_diagnostics_sa_type),0)}"
-#   tags                     = "${var.tags}"
-# }
-
-# # Create the storage account container
-# resource "azurerm_storage_container" "storagecon" {
-#   name                  = "vhds"
-#   resource_group_name   = "${var.resource_group_name}"
-#   storage_account_name  = "${azurerm_storage_account.storrageaccfw.name}"
-#   container_access_type = "private"
-# }
-
-# # ********** AVAILABILITY SET **********
-
-# # Create the availability set
-# resource "azurerm_availability_set" "avset" {
-#     name                                = "${var.avsetname}"
-#     location                            = "${azurerm_resource_group.vm.location}"
-#     resource_group_name                 = "${var.resource_group_name}"
-#     platform_update_domain_count        = 5
-#     platform_fault_domain_count         = 3
-# }
-
 # Create managed data disk for firewalls deployed in Availability Zones
 # resource "azurerm_managed_disk" "firewall" {
 #   count                = "${var.azurerm_instances}"
@@ -53,8 +14,6 @@ data "azurerm_resource_group" "rg" {
 #   zones                = "${list("${element("${list("1","2")}", count.index)}")}"
 # }
 
-# ********** VM PUBLIC IP ADDRESSES FOR MANAGEMENT **********
-
 # Create the public IP address
 resource "azurerm_public_ip" "pip" {
   count               = "${var.azurerm_instances}"
@@ -64,8 +23,6 @@ resource "azurerm_public_ip" "pip" {
   allocation_method   = "Static"
   sku                 = "Standard"
 }
-
-# ********** NSG for the Public IP **********
 
 # Create NSG
 resource "azurerm_network_security_group" "open" {
@@ -117,8 +74,6 @@ resource "azurerm_network_security_group" "ssh" {
     destination_address_prefix = "*"
   }
 }
-
-# ********** VM NETWORK INTERFACES **********
 
 # Create the network interfaces
 resource "azurerm_network_interface" "Management" {
@@ -174,8 +129,6 @@ resource "azurerm_network_interface" "Untrust" {
   network_security_group_id = "${azurerm_network_security_group.open.id}"
 }
 
-# ********** VIRTUAL MACHINE CREATION **********
-
 # Create the virtual machine. Use the "count" variable to define how many to create.
 resource "azurerm_virtual_machine" "firewall" {
   count               = "${var.azurerm_instances}"
@@ -191,8 +144,6 @@ resource "azurerm_virtual_machine" "firewall" {
 
   primary_network_interface_id = "${element(azurerm_network_interface.Management.*.id, count.index)}"
   vm_size                      = "${var.fw_size}"
-
-  # availability_set_id           = "${azurerm_availability_set.avset.id}"
   zones = "${list("${element("${list("1","2")}", count.index)}")}"
 
   storage_image_reference {
@@ -210,8 +161,6 @@ resource "azurerm_virtual_machine" "firewall" {
 
   storage_os_disk {
     name = "pa-vm-os-disk-${count.index+1}"
-
-    # vhd_uri       = "${azurerm_storage_account.storrageaccfw.primary_blob_endpoint}${element(azurerm_storage_container.storagecon.*.name, count.index)}/fwDisk${count.index+1}.vhd"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "${var.os_disk_type}"
