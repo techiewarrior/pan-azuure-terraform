@@ -1,2 +1,2 @@
 # pan-azure-terraform
-Terraform modules to deploy Palo Alto firewalls (Availability Zones) into an existing resource group, vnet, subnets
+Terraform modules to deploy Palo Alto firewalls (in Availability Zones) into an existing resource group, vnet, subnets
