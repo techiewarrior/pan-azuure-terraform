@@ -104,9 +104,8 @@ resource "azurerm_network_interface" "Trust" {
     name                                    = "${var.fw_hostname}${count.index+1}-ip-0"
     subnet_id                               = "${var.vnet_subnet_id_trust}"
     private_ip_address_allocation           = "Dynamic"
-    load_balancer_backend_address_pools_ids = ["${var.lb_backend_pool_trust}"]
+    # load_balancer_backend_address_pools_ids = ["${var.lb_backend_pool_trust}"]
   }
-
   network_security_group_id = "${azurerm_network_security_group.open.id}"
 }
 
@@ -122,11 +121,20 @@ resource "azurerm_network_interface" "Untrust" {
     name                                          = "${var.fw_hostname}${count.index+1}-ip-0"
     subnet_id                                     = "${var.vnet_subnet_id_untrust}"
     private_ip_address_allocation                 = "Dynamic"
-    load_balancer_backend_address_pools_ids       = ["${var.lb_backend_pool_untrust}"]
-    application_gateway_backend_address_pools_ids = ["${var.appgw_backend_pool}"]
+    # load_balancer_backend_address_pools_ids       = "${list(var.lb_pool_id)}"
+    # load_balancer_backend_address_pools_ids       = ["${var.lb_backend_pool_untrust}"]
+    # application_gateway_backend_address_pools_ids = ["${var.appgw_backend_pool}"]
+    
   }
 
   network_security_group_id = "${azurerm_network_security_group.open.id}"
+}
+resource "azurerm_network_interface_backend_address_pool_association" "lb_association" {
+  count                   = "${var.azurerm_instances}"
+  # network_interface_id    = "${azurerm_network_interface.Untrust.id}"
+  network_interface_id    = "${element(azurerm_network_interface.Untrust.*.id, count.index)}"
+  ip_configuration_name   = "${var.fw_hostname}${count.index+1}-ip-0"
+  backend_address_pool_id = "${var.lb_pool_id}"
 }
 
 # Create the virtual machine. Use the "count" variable to define how many to create.

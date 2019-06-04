@@ -19,6 +19,11 @@ variable "lb_backend_pool_untrust" {
   default     = []
 }
 
+variable "lb_pool_id" {
+  description = "The ID of the load balancer backend pool"
+  default     = ""
+}
+
 variable "appgw_backend_pool" {
   description = "Backendpool for the Application Gateway"
   type        = "list"

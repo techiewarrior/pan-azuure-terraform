@@ -9,7 +9,7 @@ module "External-LB" {
   lb_probename    = "TCP-22"
 
   "lb_port" {
-    TCP-22 = ["22", "tcp", "22"]
+    TCP-80 = ["80", "tcp", "80"]
   }
 
   "lb_probe_port" {
@@ -47,6 +47,7 @@ module "firewalls" {
   vnet_subnet_id_trust   = "${module.trust-subnet.subnet_id}"
   vnet_subnet_id_untrust = "${module.untrust-subnet.subnet_id}"
 
+  lb_pool_id   = "${module.External-LB.azurerm_lb_backend_address_pool_id}"
   fw_hostname  = "weupafwdrinfw"
   fw_size      = "Standard_D3_v2"
   os_disk_type = "Standard_LRS"
