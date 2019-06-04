@@ -1,5 +1,5 @@
 module "External-LB" {
-  source              = "modules/loadbalancer"
+  source              = "../modules/loadbalancer"
   name                = "External-LB"
   resource_group_name = "${var.resource_group_name}"
   type                = "public"
@@ -18,28 +18,28 @@ module "External-LB" {
 }
 
 module "mgmt-subnet" {
-  source               = "modules/getSubnetID"
+  source               = "../modules/getSubnetID"
   subnet_name          = "${var.mgmt_subnet_name}"
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${var.virtual_network_name}"
 }
 
 module "untrust-subnet" {
-  source               = "modules/getSubnetID"
+  source               = "../modules/getSubnetID"
   subnet_name          = "${var.untrust_subnet_name}"
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${var.virtual_network_name}"
 }
 
 module "trust-subnet" {
-  source               = "modules/getSubnetID"
+  source               = "../modules/getSubnetID"
   subnet_name          = "${var.trust_subnet_name}"
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${var.virtual_network_name}"
 }
 
 module "firewalls" {
-  source              = "modules/firewall"
+  source              = "../modules/firewall"
   resource_group_name = "${var.resource_group_name}"
   azurerm_instances   = "2"
 
