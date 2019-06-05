@@ -6,14 +6,19 @@ module "External-LB" {
 
   frontend_name   = "Untrust"
   backendpoolname = "Untrust"
-  lb_probename    = "TCP-22"
+  lb_probename    = "TCP-22-inbound"
 
   "lb_port" {
     TCP-80 = ["80", "tcp", "80"]
   }
 
   "lb_probe_port" {
-    TCP-22 = ["22"]
+    TCP-22-inbound = ["22"]
+  }
+
+  "tags" {
+    source = "terraform"
+    flow = "inbound"
   }
 }
 
@@ -51,6 +56,10 @@ module "firewalls" {
   fw_hostname  = "${var.fw_hostname_prefix}"
   fw_size      = "${var.fw_size}"
   os_disk_type = "Standard_LRS"
+  "tags" {
+    source = "terraform"
+    flow = "inbound"
+  }
 }
 
 # module "test-subnet" {

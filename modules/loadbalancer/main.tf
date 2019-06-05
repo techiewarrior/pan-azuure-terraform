@@ -11,6 +11,7 @@ resource "azurerm_public_ip" "azlb" {
   resource_group_name = "${var.resource_group_name}"
   allocation_method   = "${var.public_ip_address_allocation}"
   sku                 = "Standard"
+  tags                = "${var.tags}"
 }
 
 resource "azurerm_lb" "azlb" {

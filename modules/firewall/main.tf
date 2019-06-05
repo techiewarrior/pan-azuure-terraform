@@ -22,11 +22,12 @@ resource "azurerm_public_ip" "pip" {
   resource_group_name = "${var.resource_group_name}"
   allocation_method   = "Static"
   sku                 = "Standard"
+  tags                = "${var.tags}"
 }
 
 # Create NSG
 resource "azurerm_network_security_group" "open" {
-  name                = "Allow-Any"
+  name                = "${var.fw_hostname}-Allow-Any"
   location            = "${data.azurerm_resource_group.rg.location}"
   resource_group_name = "${var.resource_group_name}"
 
@@ -43,10 +44,12 @@ resource "azurerm_network_security_group" "open" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  tags                = "${var.tags}"
 }
 
 resource "azurerm_network_security_group" "ssh" {
-  name                = "mgmt"
+  name                = "${var.fw_hostname}-mgmt"
   location            = "${data.azurerm_resource_group.rg.location}"
   resource_group_name = "${var.resource_group_name}"
 
@@ -73,6 +76,8 @@ resource "azurerm_network_security_group" "ssh" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+  tags                = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -90,6 +95,8 @@ resource "azurerm_network_interface" "Management" {
   }
 
   network_security_group_id = "${azurerm_network_security_group.ssh.id}"
+
+  tags                = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -107,6 +114,8 @@ resource "azurerm_network_interface" "Trust" {
     # load_balancer_backend_address_pools_ids = ["${var.lb_backend_pool_trust}"]
   }
   network_security_group_id = "${azurerm_network_security_group.open.id}"
+
+  tags                = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -128,6 +137,8 @@ resource "azurerm_network_interface" "Untrust" {
   }
 
   network_security_group_id = "${azurerm_network_security_group.open.id}"
+
+  tags                = "${var.tags}"
 }
 resource "azurerm_network_interface_backend_address_pool_association" "lb_association" {
   count                   = "${var.azurerm_instances}"
@@ -135,6 +146,7 @@ resource "azurerm_network_interface_backend_address_pool_association" "lb_associ
   # network_interface_id    = "${element(azurerm_network_interface.Untrust.*.id, count.index)}"
   ip_configuration_name   = "${var.fw_hostname}${count.index+1}-ip-0"
   backend_address_pool_id = "${var.lb_pool_id}"
+
 }
 
 # Create the virtual machine. Use the "count" variable to define how many to create.
@@ -192,4 +204,6 @@ resource "azurerm_virtual_machine" "firewall" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+
+  tags                = "${var.tags}"
 }

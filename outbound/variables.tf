@@ -1,6 +1,6 @@
 variable "resource_group_name" {
   description = "The name of the resource group in which the resources will be created"
-  default     = "migaraOutboundTransit"
+  default     = "migaraTransit"
 }
 
 variable "virtual_network_name" {

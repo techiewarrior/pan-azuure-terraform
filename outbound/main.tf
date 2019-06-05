@@ -26,7 +26,7 @@ module "Internal-LB" {
 
   frontend_name   = "Trust"
   backendpoolname = "Trust"
-  lb_probename    = "ssh"
+  lb_probename    = "TCP-22-outbound"
 
   frontend_subnet_id = "${module.trust-subnet.subnet_id}"
 
@@ -35,7 +35,7 @@ module "Internal-LB" {
   }
 
   "lb_probe_port" {
-    ssh = ["22"]
+    TCP-22-outbound = ["22"]
   }
 }
 
