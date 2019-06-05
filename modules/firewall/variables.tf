@@ -175,7 +175,7 @@ variable "vm_series" {
 
 variable "fw_version" {
   # Latest / 8.1.0 / 8.0.0 / 7.1.1
-  default = "latest"
+  default = "8.1.0"
 }
 
 variable "fw_size" {
@@ -206,4 +206,12 @@ variable "lbnamepooluntrust" {
 
 variable "lbnamepooltrust" {
   default = ""
+}
+
+variable "private_ip_address_allocation" {
+  default = "Dynamic"
+}
+
+variable "traffic_direction" {
+  default = "Inbound"
 }

@@ -1,7 +1,9 @@
 *.tfstate
 *.tfstate.*
 .terraform/
+inbound/.terraform/
 inbound/*.tfstate
 inbound/*.tfstate.*
+outbound/.terraform/
 outbound/*.tfstate
 outbound/*.tfstate.*

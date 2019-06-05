@@ -22,7 +22,7 @@ resource "azurerm_lb" "azlb" {
 
   frontend_ip_configuration {
     name                          = "${var.frontend_name}"
-    public_ip_address_id          = "${join("",azurerm_public_ip.azlb.*.id)}"
+    public_ip_address_id          = "${var.type == "public" ? join("",azurerm_public_ip.azlb.*.id) : ""}"
     subnet_id                     = "${var.type == "private" ? "${var.frontend_subnet_id}" : ""}"
     private_ip_address            = "${var.type == "private" ? "${var.frontend_private_ip_address}" : ""}"
     private_ip_address_allocation = "${var.type == "private" ? "${var.frontend_private_ip_address_allocation}" : "dynamic"}"

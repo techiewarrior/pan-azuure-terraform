@@ -85,7 +85,7 @@ resource "azurerm_network_interface" "Management" {
   ip_configuration {
     name                          = "${var.fw_hostname}${count.index+1}-ip-0"
     subnet_id                     = "${var.vnet_subnet_id_mgmt}"
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "${var.private_ip_address_allocation}"
     public_ip_address_id          = "${element(azurerm_public_ip.pip.*.id, count.index)}"
   }
 
@@ -103,7 +103,7 @@ resource "azurerm_network_interface" "Trust" {
   ip_configuration {
     name                                    = "${var.fw_hostname}${count.index+1}-ip-0"
     subnet_id                               = "${var.vnet_subnet_id_trust}"
-    private_ip_address_allocation           = "Dynamic"
+    private_ip_address_allocation           = "${var.private_ip_address_allocation}"
     # load_balancer_backend_address_pools_ids = ["${var.lb_backend_pool_trust}"]
   }
   network_security_group_id = "${azurerm_network_security_group.open.id}"
@@ -120,7 +120,7 @@ resource "azurerm_network_interface" "Untrust" {
   ip_configuration {
     name                                          = "${var.fw_hostname}${count.index+1}-ip-0"
     subnet_id                                     = "${var.vnet_subnet_id_untrust}"
-    private_ip_address_allocation                 = "Dynamic"
+    private_ip_address_allocation                 = "${var.private_ip_address_allocation}"
     # load_balancer_backend_address_pools_ids       = "${list(var.lb_pool_id)}"
     # load_balancer_backend_address_pools_ids       = ["${var.lb_backend_pool_untrust}"]
     # application_gateway_backend_address_pools_ids = ["${var.appgw_backend_pool}"]
@@ -131,8 +131,8 @@ resource "azurerm_network_interface" "Untrust" {
 }
 resource "azurerm_network_interface_backend_address_pool_association" "lb_association" {
   count                   = "${var.azurerm_instances}"
-  # network_interface_id    = "${azurerm_network_interface.Untrust.id}"
-  network_interface_id    = "${element(azurerm_network_interface.Untrust.*.id, count.index)}"
+  network_interface_id    = "${var.traffic_direction == "Inbound" ? "${element(azurerm_network_interface.Untrust.*.id, count.index)}" : "${element(azurerm_network_interface.Trust.*.id, count.index)}" }"
+  # network_interface_id    = "${element(azurerm_network_interface.Untrust.*.id, count.index)}"
   ip_configuration_name   = "${var.fw_hostname}${count.index+1}-ip-0"
   backend_address_pool_id = "${var.lb_pool_id}"
 }
