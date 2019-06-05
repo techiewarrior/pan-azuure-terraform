@@ -9,6 +9,7 @@ variable "hostname" {
 variable "dns_name" {
   description = " Label for the Domain Name. Will be used to make up the FQDN. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system."
 }
+
 variable "storage_account_tier" {
   description = "Defines the Tier of storage account to be created. Valid options are Standard and Premium."
   default     = "Standard"

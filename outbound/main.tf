@@ -18,6 +18,7 @@ module "trust-subnet" {
   resource_group_name  = "${var.resource_group_name}"
   virtual_network_name = "${var.virtual_network_name}"
 }
+
 module "Internal-LB" {
   source              = "../modules/loadbalancer"
   name                = "Internal-LB"
@@ -31,7 +32,7 @@ module "Internal-LB" {
   frontend_subnet_id = "${module.trust-subnet.subnet_id}"
 
   "lb_port" {
-    HA  = ["0", "All", "0"]
+    HA = ["0", "All", "0"]
   }
 
   "lb_probe_port" {
@@ -40,16 +41,15 @@ module "Internal-LB" {
 
   "tags" {
     source = "terraform"
-    flow = "outbound"
+    flow   = "outbound"
   }
 }
 
-
 module "firewalls" {
-  source              = "../modules/firewall"
-  resource_group_name = "${var.resource_group_name}"
-  azurerm_instances   = "2"
-  traffic_direction = "Outbound"
+  source                 = "../modules/firewall"
+  resource_group_name    = "${var.resource_group_name}"
+  azurerm_instances      = "2"
+  traffic_direction      = "Outbound"
   vnet_subnet_id_mgmt    = "${module.mgmt-subnet.subnet_id}"
   vnet_subnet_id_trust   = "${module.trust-subnet.subnet_id}"
   vnet_subnet_id_untrust = "${module.untrust-subnet.subnet_id}"
@@ -61,6 +61,6 @@ module "firewalls" {
 
   "tags" {
     source = "terraform"
-    flow = "outbound"
+    flow   = "outbound"
   }
 }

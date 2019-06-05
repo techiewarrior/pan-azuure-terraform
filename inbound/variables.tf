@@ -22,6 +22,7 @@ variable "trust_subnet_name" {
   description = "The name of the trust subnet"
   default     = "weu-trusted-priv-prd-subnt-1"
 }
+
 variable "fw_hostname_prefix" {
   description = "Prefix of the firewall hostnames"
   default     = "weupafwdrinfw"

@@ -7,3 +7,4 @@ inbound/*.tfstate.*
 outbound/.terraform/
 outbound/*.tfstate
 outbound/*.tfstate.*
+config_push/

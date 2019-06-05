@@ -44,8 +44,7 @@ resource "azurerm_network_security_group" "open" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
-
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }
 
 resource "azurerm_network_security_group" "ssh" {
@@ -77,7 +76,7 @@ resource "azurerm_network_security_group" "ssh" {
     destination_address_prefix = "*"
   }
 
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -96,7 +95,7 @@ resource "azurerm_network_interface" "Management" {
 
   network_security_group_id = "${azurerm_network_security_group.ssh.id}"
 
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -108,14 +107,16 @@ resource "azurerm_network_interface" "Trust" {
   enable_ip_forwarding = "${var.enable_ip_forwarding}"
 
   ip_configuration {
-    name                                    = "${var.fw_hostname}${count.index+1}-ip-0"
-    subnet_id                               = "${var.vnet_subnet_id_trust}"
-    private_ip_address_allocation           = "${var.private_ip_address_allocation}"
+    name                          = "${var.fw_hostname}${count.index+1}-ip-0"
+    subnet_id                     = "${var.vnet_subnet_id_trust}"
+    private_ip_address_allocation = "${var.private_ip_address_allocation}"
+
     # load_balancer_backend_address_pools_ids = ["${var.lb_backend_pool_trust}"]
   }
+
   network_security_group_id = "${azurerm_network_security_group.open.id}"
 
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }
 
 # Create the network interfaces
@@ -127,26 +128,27 @@ resource "azurerm_network_interface" "Untrust" {
   enable_ip_forwarding = "${var.enable_ip_forwarding}"
 
   ip_configuration {
-    name                                          = "${var.fw_hostname}${count.index+1}-ip-0"
-    subnet_id                                     = "${var.vnet_subnet_id_untrust}"
-    private_ip_address_allocation                 = "${var.private_ip_address_allocation}"
+    name                          = "${var.fw_hostname}${count.index+1}-ip-0"
+    subnet_id                     = "${var.vnet_subnet_id_untrust}"
+    private_ip_address_allocation = "${var.private_ip_address_allocation}"
+
     # load_balancer_backend_address_pools_ids       = "${list(var.lb_pool_id)}"
     # load_balancer_backend_address_pools_ids       = ["${var.lb_backend_pool_untrust}"]
     # application_gateway_backend_address_pools_ids = ["${var.appgw_backend_pool}"]
-    
   }
 
   network_security_group_id = "${azurerm_network_security_group.open.id}"
 
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }
+
 resource "azurerm_network_interface_backend_address_pool_association" "lb_association" {
-  count                   = "${var.azurerm_instances}"
-  network_interface_id    = "${var.traffic_direction == "Inbound" ? "${element(azurerm_network_interface.Untrust.*.id, count.index)}" : "${element(azurerm_network_interface.Trust.*.id, count.index)}" }"
+  count                = "${var.azurerm_instances}"
+  network_interface_id = "${var.traffic_direction == "Inbound" ? "${element(azurerm_network_interface.Untrust.*.id, count.index)}" : "${element(azurerm_network_interface.Trust.*.id, count.index)}" }"
+
   # network_interface_id    = "${element(azurerm_network_interface.Untrust.*.id, count.index)}"
   ip_configuration_name   = "${var.fw_hostname}${count.index+1}-ip-0"
   backend_address_pool_id = "${var.lb_pool_id}"
-
 }
 
 # Create the virtual machine. Use the "count" variable to define how many to create.
@@ -164,7 +166,7 @@ resource "azurerm_virtual_machine" "firewall" {
 
   primary_network_interface_id = "${element(azurerm_network_interface.Management.*.id, count.index)}"
   vm_size                      = "${var.fw_size}"
-  zones = "${list("${element("${list("1","2")}", count.index)}")}"
+  zones                        = "${list("${element("${list("1","2")}", count.index)}")}"
 
   storage_image_reference {
     publisher = "${var.vm_publisher}"
@@ -180,7 +182,7 @@ resource "azurerm_virtual_machine" "firewall" {
   }
 
   storage_os_disk {
-    name = "${var.fw_hostname}${count.index+1}-pa-vm-os-disk"
+    name              = "${var.fw_hostname}${count.index+1}-pa-vm-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "${var.os_disk_type}"
@@ -204,6 +206,5 @@ resource "azurerm_virtual_machine" "firewall" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
-
-  tags                = "${var.tags}"
+  tags = "${var.tags}"
 }

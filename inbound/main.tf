@@ -18,7 +18,7 @@ module "External-LB" {
 
   "tags" {
     source = "terraform"
-    flow = "inbound"
+    flow   = "inbound"
   }
 }
 
@@ -56,9 +56,10 @@ module "firewalls" {
   fw_hostname  = "${var.fw_hostname_prefix}"
   fw_size      = "${var.fw_size}"
   os_disk_type = "Standard_LRS"
+
   "tags" {
     source = "terraform"
-    flow = "inbound"
+    flow   = "inbound"
   }
 }
 
@@ -69,6 +70,7 @@ module "firewalls" {
 #   virtual_network_name = "test-vnet"
 # }
 
+
 # module "Test-VM" {
 #   source              = "../modules/testHost"
 #   resource_group_name = "migaraAzureSpoke"
@@ -78,3 +80,4 @@ module "firewalls" {
 #   admin_username      = "creator"
 #   dns_name            = "ubuntutestvm2"
 # }
+

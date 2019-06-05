@@ -1,6 +1,7 @@
 data "azurerm_resource_group" "rg" {
   name = "${var.resource_group_name}"
 }
+
 # ********** VM PUBLIC IP ADDRESSES FOR MANAGEMENT **********
 
 # Create the public IP address
@@ -9,9 +10,9 @@ resource "azurerm_public_ip" "pip" {
   location                     = "${data.azurerm_resource_group.rg.location}"
   resource_group_name          = "${var.resource_group_name}"
   public_ip_address_allocation = "Dynamic"
+
   #domain_name_label            = "${var.dns_name}"
 }
-
 
 # ********** VM NETWORK INTERFACES **********
 
@@ -34,8 +35,8 @@ resource "azurerm_network_interface" "nic" {
 # Here we are generating a random hex value of length 4 (2*2) that is prefixed with
 # the static string "sternstorageaccount". For example: sternstorageaccount1n8a
 resource "random_id" "storage_account" {
-    prefix         = "storageaccount"
-    byte_length = "2"
+  prefix      = "storageaccount"
+  byte_length = "2"
 }
 
 # Create the storage account
@@ -49,10 +50,10 @@ resource "azurerm_storage_account" "stor" {
 
 # Create the storage account container
 resource "azurerm_storage_container" "storagecon" {
-    name                            = "vhds"
-    resource_group_name             = "${var.resource_group_name}"
-    storage_account_name            = "${azurerm_storage_account.stor.name}"
-    container_access_type           = "private"
+  name                  = "vhds"
+  resource_group_name   = "${var.resource_group_name}"
+  storage_account_name  = "${azurerm_storage_account.stor.name}"
+  container_access_type = "private"
 }
 
 # ********** DATADISK VM **********
@@ -83,7 +84,7 @@ resource "azurerm_virtual_machine" "vm" {
     offer     = "${var.image_offer}"
     sku       = "${var.image_sku}"
     version   = "${var.image_version}"
-  } 
+  }
 
   plan {
     name      = "${var.image_sku}"
@@ -120,5 +121,5 @@ resource "azurerm_virtual_machine" "vm" {
   boot_diagnostics {
     enabled     = true
     storage_uri = "${azurerm_storage_account.stor.primary_blob_endpoint}"
-  }   
+  }
 }
