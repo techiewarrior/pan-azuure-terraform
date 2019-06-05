@@ -6,3 +6,12 @@ variable "auth_code" {
   description = "VM Series Auth Code"
   default     = ""
 }
+
+variable "static_routes" {
+  type        = "map"
+  description = "A map of the static routes to be confoigured."
+
+  default = {
+    source = "terraform"
+  }
+}

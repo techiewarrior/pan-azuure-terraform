@@ -168,7 +168,7 @@ resource "azurerm_virtual_machine" "firewall" {
   }
 
   storage_os_disk {
-    name = "${var.fw_hostname}-pa-vm-os-disk-${count.index+1}"
+    name = "${var.fw_hostname}${count.index+1}-pa-vm-os-disk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "${var.os_disk_type}"
