@@ -37,6 +37,11 @@ module "Internal-LB" {
   "lb_probe_port" {
     TCP-22-outbound = ["22"]
   }
+
+  "tags" {
+    source = "terraform"
+    flow = "outbound"
+  }
 }
 
 
@@ -53,4 +58,9 @@ module "firewalls" {
   fw_hostname  = "${var.fw_hostname_prefix}"
   fw_size      = "${var.fw_size}"
   os_disk_type = "Standard_LRS"
+
+  "tags" {
+    source = "terraform"
+    flow = "outbound"
+  }
 }
